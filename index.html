@@ -1,0 +1,337 @@
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>童話故事電子繪本</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Microsoft JhengHei", sans-serif;
+    background: linear-gradient(135deg, #f9dca5, #f4a6a6, #a9d6c8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+h1 {
+    color: #713d25;
+    text-shadow: 2px 2px 4px #fff;
+    margin: 10px;
+    font-size: 30px;
+}
+
+.book {
+    width: min(85vw, 950px);
+    height: min(65vh, 570px);
+    background: #fff9e9;
+    border: 12px solid #a96836;
+    border-radius: 15px;
+    box-shadow: 0 12px 30px #65432166;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.page {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff9e9;
+}
+
+.page img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+#spirit {
+    position: absolute;
+    width: 75px;
+    right: 15px;
+    bottom: 15px;
+    opacity: 0.85;
+    pointer-events: none;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 25px;
+    margin-top: 22px;
+}
+
+button {
+    border: none;
+    border-radius: 50px;
+    padding: 12px 25px;
+    background: #a95732;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px #5555;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: #713d25;
+    transform: scale(1.08);
+}
+
+button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+}
+
+#pageNumber {
+    font-size: 18px;
+    color: #713d25;
+    font-weight: bold;
+}
+
+.progress {
+    width: min(75vw, 500px);
+    height: 9px;
+    background: #ffffff99;
+    border-radius: 10px;
+    margin-top: 18px;
+    overflow: hidden;
+}
+
+#progressBar {
+    height: 100%;
+    width: 5%;
+    background: #a95732;
+    transition: width 0.3s;
+}
+
+.bottom {
+    margin-top: 15px;
+    display: flex;
+    gap: 12px;
+}
+
+@media(max-width:600px) {
+    h1 {
+        font-size: 22px;
+    }
+
+    .book {
+        width: 94vw;
+        height: 55vh;
+        border-width: 6px;
+    }
+
+    button {
+        padding: 10px 16px;
+        font-size: 15px;
+    }
+
+    .controls {
+        gap: 12px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<h1>🌳 童話故事電子繪本 🌳</h1>
+
+<div class="book">
+
+    <div class="page">
+        <img id="storyImage"
+             src="graphics/0.jpg"
+             alt="繪本故事圖片">
+    </div>
+
+    <img id="spirit"
+         src="graphics/spirit.png"
+         alt="裝飾">
+
+</div>
+
+<div class="controls">
+
+    <button id="prevBtn" onclick="prevPage()">
+        ◀ 上一頁
+    </button>
+
+    <span id="pageNumber">第 1 / 20 頁</span>
+
+    <button id="nextBtn" onclick="nextPage()">
+        下一頁 ▶
+    </button>
+
+</div>
+
+<div class="progress">
+    <div id="progressBar"></div>
+</div>
+
+<div class="bottom">
+
+    <button onclick="goFirst()">📖 回到首頁</button>
+
+    <button onclick="toggleFullscreen()">⛶ 全螢幕</button>
+
+</div>
+
+<script>
+
+const totalPages = 20;
+
+let currentPage = 0;
+
+const storyImage =
+    document.getElementById("storyImage");
+
+const pageNumber =
+    document.getElementById("pageNumber");
+
+const prevBtn =
+    document.getElementById("prevBtn");
+
+const nextBtn =
+    document.getElementById("nextBtn");
+
+const progressBar =
+    document.getElementById("progressBar");
+
+// 顯示故事頁面
+function showPage() {
+
+    storyImage.src =
+        "graphics/" + currentPage + ".jpg";
+
+    storyImage.alt =
+        "繪本第 " + (currentPage + 1) + " 頁";
+
+    pageNumber.textContent =
+        "第 " + (currentPage + 1) +
+        " / " + totalPages + " 頁";
+
+    prevBtn.disabled = currentPage === 0;
+
+    nextBtn.disabled =
+        currentPage === totalPages - 1;
+
+    progressBar.style.width =
+        ((currentPage + 1) / totalPages * 100) + "%";
+
+}
+
+// 下一頁
+function nextPage() {
+
+    if (currentPage < totalPages - 1) {
+        currentPage++;
+        showPage();
+    }
+
+}
+
+// 上一頁
+function prevPage() {
+
+    if (currentPage > 0) {
+        currentPage--;
+        showPage();
+    }
+
+}
+
+// 回到首頁
+function goFirst() {
+
+    currentPage = 0;
+    showPage();
+
+}
+
+// 全螢幕
+function toggleFullscreen() {
+
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+    } else {
+        document.exitFullscreen();
+    }
+
+}
+
+// 鍵盤翻頁
+document.addEventListener("keydown", function(e) {
+
+    if (e.key === "ArrowRight") {
+        nextPage();
+    }
+
+    if (e.key === "ArrowLeft") {
+        prevPage();
+    }
+
+    if (e.key === "Home") {
+        goFirst();
+    }
+
+});
+
+// 手機左右滑動翻頁
+let touchStartX = 0;
+
+document.querySelector(".book")
+.addEventListener("touchstart", function(e) {
+
+    touchStartX = e.changedTouches[0].screenX;
+
+});
+
+document.querySelector(".book")
+.addEventListener("touchend", function(e) {
+
+    let touchEndX = e.changedTouches[0].screenX;
+
+    if (touchEndX < touchStartX - 50) {
+        nextPage();
+    }
+
+    if (touchEndX > touchStartX + 50) {
+        prevPage();
+    }
+
+});
+
+// 預先載入圖片
+for (let i = 0; i < totalPages; i++) {
+
+    const img = new Image();
+
+    img.src = "graphics/" + i + ".jpg";
+
+}
+
+// 初始化
+showPage();
+
+</script>
+
+</body>
+</html>
